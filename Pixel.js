@@ -36,6 +36,26 @@
   const body = document.querySelector('body') || document.documentElement;
   body.insertBefore(controls, canvas);
 
+  // Sitewide settings loader
+  function loadSiteSettings() {
+    // Attempts to fetch `/site-settings.json` at the site root and apply any defaults found there.
+    return fetch('/site-settings.json', { cache: 'no-cache' })
+      .then(res => {
+        if (!res.ok) throw new Error('no site settings');
+        return res.json();
+      })
+      .then(s => {
+        if (s.gridSize) gridSize = s.gridSize;
+        if (s.pixelSize) pixelSize = s.pixelSize;
+        if (s.color) { color = s.color; colorInput.value = color; }
+        if (s.tool) tool = s.tool;
+      })
+      .catch(() => { /* no site settings found or parse error; ignore */ });
+
+  // Wire UI controls (no localStorage persistence)
+  colorInput.addEventListener('input', (e) => { color = e.target.value; });
+  sizeInput.addEventListener('input', (e) => { pixelSize = Math.max(1, Math.round(e.target.value) * 8); });
+
   // Initialize canvas size & state
   function resizeCanvas() {
     canvas.width = gridSize * pixelSize;
@@ -124,6 +144,8 @@
   if (pencilBtn) pencilBtn.addEventListener('click', () => { tool = 'pencil'; pencilBtn.disabled = true; eraserBtn && (eraserBtn.disabled = false); fillBtn && (fillBtn.disabled = false); });
   if (eraserBtn) eraserBtn.addEventListener('click', () => { tool = 'eraser'; eraserBtn.disabled = true; pencilBtn && (pencilBtn.disabled = false); fillBtn && (fillBtn.disabled = false); });
   if (fillBtn) fillBtn.addEventListener('click', () => { tool = 'fill'; fillBtn.disabled = true; pencilBtn && (pencilBtn.disabled = false); eraserBtn && (eraserBtn.disabled = false); });
+  // tool selection (no local persistence)
+  [pencilBtn, eraserBtn, fillBtn].forEach(b => { if (!b) return; });
   if (saveBtn) saveBtn.addEventListener('click', () => {
     // Export grid as a .pixel JSON file containing gridSize, pixelSize and each pixel's RGB and position
     const payload = {
@@ -156,29 +178,30 @@
       const reader = new FileReader();
       if (isPixel) {
         reader.onload = (re) => {
-          try {
-            const payload = JSON.parse(re.target.result);
-            if (payload.gridSize) {
-              gridSize = payload.gridSize;
+            try {
+              const payload = JSON.parse(re.target.result);
+              if (payload.gridSize) {
+                gridSize = payload.gridSize;
+              }
+              if (payload.pixelSize) {
+                pixelSize = payload.pixelSize;
+              }
+              // Re-init cells if size changed
+              cells = new Array(gridSize * gridSize).fill('#ffffff');
+              if (Array.isArray(payload.pixels)) {
+                payload.pixels.forEach(p => {
+                  const hex = p.a === 0 ? '#ffffff' : rgbToHex(p.r, p.g, p.b);
+                  if (p.x >= 0 && p.y >= 0 && p.x < gridSize && p.y < gridSize) {
+                    cells[p.y * gridSize + p.x] = hex;
+                  }
+                });
+              }
+              resizeCanvas();
+              render();
+              // sitewide/local persistence is not used; loaded pixels applied
+            } catch (err) {
+              console.error('Failed to parse .pixel file', err);
             }
-            if (payload.pixelSize) {
-              pixelSize = payload.pixelSize;
-            }
-            // Re-init cells if size changed
-            cells = new Array(gridSize * gridSize).fill('#ffffff');
-            if (Array.isArray(payload.pixels)) {
-              payload.pixels.forEach(p => {
-                const hex = p.a === 0 ? '#ffffff' : rgbToHex(p.r, p.g, p.b);
-                if (p.x >= 0 && p.y >= 0 && p.x < gridSize && p.y < gridSize) {
-                  cells[p.y * gridSize + p.x] = hex;
-                }
-              });
-            }
-            resizeCanvas();
-            render();
-          } catch (err) {
-            console.error('Failed to parse .pixel file', err);
-          }
         };
         reader.readAsText(file);
       } else {
@@ -211,9 +234,11 @@
   });
   if (quitBtn) quitBtn.addEventListener('click', () => { window.location.href = './index.html'; });
 
-  // Initialize
-  resizeCanvas();
-  render();
+  // Initialize: load sitewide settings (if present), then size and render
+  loadSiteSettings().then(() => {
+    resizeCanvas();
+    render();
+  });
 
   // Expose small API to console for debugging
   window.PixelApp = {
@@ -222,6 +247,15 @@
     clear() { cells.fill('#ffffff'); render(); },
     getData() { return cells.slice(); }
   };
+
+  // helper: convert hex -> rgba
+  function hexToRgb(hex) {
+    if (!hex) return { r: 255, g: 255, b: 255, a: 255 };
+    hex = hex.replace('#', '');
+    if (hex.length === 3) hex = hex.split('').map(h => h + h).join('');
+    const num = parseInt(hex, 16);
+    return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255, a: 255 };
+  }
 
   function componentToHex(c) {
     const hex = c.toString(16);
