@@ -1,0 +1,17 @@
+{
+  "name": "tools",
+  "version": "1.0.0",
+  "description": "A collection of tools",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx live-server --port=3000",
+    "dev": "npx live-server --port=3000 --open=/",
+    "build": "echo 'No build step required for static HTML'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "live-server": "^1.2.2"
+  }
+}
