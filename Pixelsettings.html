@@ -2,23 +2,43 @@
 <html>
     <head>
         <meta charset="utf-8">
-        <title>Pixelart settings</title>
-        <link rel="stylesheet" href="style.css">
+        <title>Settings (pixelart)</title>
+        <link rel="stylesheet" href="Pixelsettings.css">
     </head>
         <body>
-            <form id="color theme">
-                <span>Color theme:</span><br>
-                <ul>
-                 <li>Light mode</li>
-                 <li>Dark mode</li>
-                 <li>Dark blue</li>
-                 <li>Purple</li>   
-                </ul>
-                <span>Type EXACTLY as inputed above!</span><br>
-                <label for="color-theme">Color theme:</label>
-                <input type="<!--set as dropdown?-->" id="color-theme" name="color-theme" placeholder="Color theme">
-            </form>
+            <a href="Pixel.html">Return</a>
 
+            <ul>
+            <li>Pick a color scheme:</li>
+                <label for="theme-select">Choose a theme:</label>
+                <select id="theme-select">
+                    <option value="light-mode">Light</option>
+                    <option value="dark-mode">Dark</option>
+                    <option value="dark-blue-mode">Dark Blue</option>
+                    <option value="purple-mode">Purple</option>
+                </select>
+            </li>
+            </ul>
+
+            <div id="theme-preview">
+                <h3>Theme Preview</h3>
+                <div class="preview-content">
+                    <p>This is how your selected theme will look:</p>
+                    <div class="preview-elements">
+                        <button class="preview-btn">Sample Button</button>
+                        <a href="#" class="preview-link">Sample Link</a>
+                        <div class="preview-text">
+                            <h4>Heading Text</h4>
+                            <p>Regular paragraph text for preview.</p>
+                        </div>
+                    </div>
+                    <div class="preview-canvas">
+                        <canvas id="preview-canvas" width="100" height="100"></canvas>
+                        <p>Canvas preview (changes with theme)</p>
+                    </div>
+                </div>
+            </div>
+            <!--Put a dropdwon here-->
         </body>
-        <script src="script.js"></script>
+        <script src="Pixelsettings.js"></script>
 </html>

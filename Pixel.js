@@ -1,7 +1,16 @@
 (() => {
-  const canvas = document.getElementById('Pixel-can');
-  if (!canvas) return;
+  let canvas = document.getElementById('Pixel-can');
+  if (!canvas) {
+    canvas = document.createElement('canvas');
+    canvas.id = 'Pixel-can';
+    const body = document.querySelector('body') || document.documentElement;
+    body.appendChild(canvas);
+  }
   const ctx = canvas.getContext('2d');
+
+  canvas.style.border = '2px solid #000';
+  canvas.style.display = 'block';
+  canvas.style.marginTop = '12px';
 
   // Configuration
   let gridSize = 32; // number of cells per side
@@ -23,12 +32,19 @@
 
   const sizeLabel = document.createElement('label');
   sizeLabel.textContent = ' Brush: ';
-  const sizeInput = document.createElement('input');
-  sizeInput.type = 'range';
-  sizeInput.min = 1;
-  sizeInput.max = 8;
-  sizeInput.value = 1;
-  sizeInput.addEventListener('input', e => pixelSize = Math.max(1, Math.round(e.target.value) * 8));
+  const sizeInput = document.createElement('select');
+  sizeInput.innerHTML = `
+    <option value="8">1px</option>
+    <option value="16">2px</option>
+    <option value="24">3px</option>
+    <option value="32">4px</option>
+    <option value="40">5px</option>
+    <option value="48">6px</option>
+    <option value="56">7px</option>
+    <option value="64">8px</option>
+  `;
+  sizeInput.value = '8'; // Default to 1px (8 actual pixels)
+  sizeInput.addEventListener('change', e => pixelSize = parseInt(e.target.value));
   sizeLabel.appendChild(sizeInput);
 
   controls.appendChild(colorLabel);
@@ -36,8 +52,77 @@
   const body = document.querySelector('body') || document.documentElement;
   body.insertBefore(controls, canvas);
 
+  // UI Toggle functionality
+  const ui1 = document.getElementById('ui1');
+  const ui2 = document.getElementById('ui2');
+  const ui3 = document.getElementById('ui3');
+  const toggleBtn = document.getElementById('ui-toggle');
+  
+  // Custom button text configuration - edit these values to change button text
+  const buttonTexts = {
+    showUI1: 'Tools <',      // Text when showing UI1 (Tools)
+    showUI2: 'Settings >',   // Text when showing UI2 (Settings) 
+    showUI3: 'Canvas >'      // Text when showing UI3 (Canvas options)
+  };
+  
+  // Track current UI state
+  let currentUI = 1;
+  
+  if (ui2) ui2.style.display = 'none'; // Hide ui2 initially
+  if (ui3) ui3.style.display = 'none'; // Hide ui3 initially
+  if (toggleBtn) toggleBtn.textContent = buttonTexts.showUI2; // Start with showing UI2 next
+  
+  if (toggleBtn) {
+    toggleBtn.addEventListener('click', () => {
+      // Cycle through UI states: 1 -> 2 -> 3 -> 1
+      currentUI = currentUI % 3 + 1;
+      
+      // Hide all UIs first
+      if (ui1) ui1.style.display = 'none';
+      if (ui2) ui2.style.display = 'none';
+      if (ui3) ui3.style.display = 'none';
+      
+      // Show the current UI
+      if (currentUI === 1 && ui1) {
+        ui1.style.display = 'block';
+        toggleBtn.textContent = buttonTexts.showUI2;
+      } else if (currentUI === 2 && ui2) {
+        ui2.style.display = 'block';
+        toggleBtn.textContent = buttonTexts.showUI3;
+      } else if (currentUI === 3 && ui3) {
+        ui3.style.display = 'block';
+        toggleBtn.textContent = buttonTexts.showUI1;
+      }
+    });
+  }
+
+  // Canvas size buttons in UI3
+  if (ui3) {
+    const sizeButtons = ui3.querySelectorAll('button[data-size]');
+    sizeButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const newSize = parseInt(button.getAttribute('data-size'));
+        if (newSize && newSize > 0 && newSize <= 512) { // Max 512x512 for performance
+          gridSize = newSize;
+          // Reinitialize cells array with new size
+          cells = new Array(gridSize * gridSize).fill('#ffffff');
+          // Resize canvas and render
+          resizeCanvas();
+          render();
+          console.log(`Canvas size changed to ${gridSize}x${gridSize}`);
+        }
+      });
+    });
+  }
+
   // Sitewide settings loader
   function loadSiteSettings() {
+    // Load theme from localStorage first
+    const savedTheme = localStorage.getItem('pixelArtTheme');
+    if (savedTheme) {
+      applyTheme(savedTheme);
+    }
+
     // Attempts to fetch `/site-settings.json` at the site root and apply any defaults found there.
     return fetch('/site-settings.json', { cache: 'no-cache' })
       .then(res => {
@@ -49,12 +134,23 @@
         if (s.pixelSize) pixelSize = s.pixelSize;
         if (s.color) { color = s.color; colorInput.value = color; }
         if (s.tool) tool = s.tool;
+        if (s.theme) applyTheme(s.theme);
       })
       .catch(() => { /* no site settings found or parse error; ignore */ });
+  }
 
-  // Wire UI controls (no localStorage persistence)
+  // Apply theme to the page
+  function applyTheme(theme) {
+    // Remove existing theme classes
+    document.body.className = document.body.className.replace(/mode/g, '').trim();
+
+    // Add theme class
+    if (theme) {
+      document.body.classList.add(theme);
+    }
+  }
   colorInput.addEventListener('input', (e) => { color = e.target.value; });
-  sizeInput.addEventListener('input', (e) => { pixelSize = Math.max(1, Math.round(e.target.value) * 8); });
+  sizeInput.addEventListener('change', (e) => { pixelSize = parseInt(e.target.value); });
 
   // Initialize canvas size & state
   function resizeCanvas() {
@@ -140,6 +236,7 @@
   const saveBtn = document.getElementById('save');
   const loadBtn = document.getElementById('load');
   const quitBtn = document.getElementById('quit');
+  const clearBtn = document.getElementById('clear');
 
   if (pencilBtn) pencilBtn.addEventListener('click', () => { tool = 'pencil'; pencilBtn.disabled = true; eraserBtn && (eraserBtn.disabled = false); fillBtn && (fillBtn.disabled = false); });
   if (eraserBtn) eraserBtn.addEventListener('click', () => { tool = 'eraser'; eraserBtn.disabled = true; pencilBtn && (pencilBtn.disabled = false); fillBtn && (fillBtn.disabled = false); });
@@ -160,26 +257,32 @@
         payload.pixels.push({ x, y, r: rgba.r, g: rgba.g, b: rgba.b, a: rgba.a });
       }
     }
-    const blob = new Blob([JSON.stringify(payload)], { type: 'application/json' });
+    console.log('Saving pixel art:', payload);
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
     const link = document.createElement('a');
     link.download = 'pixel-art.pixel';
     link.href = URL.createObjectURL(blob);
     link.click();
     setTimeout(() => URL.revokeObjectURL(link.href), 5000);
+    console.log('Save initiated');
   });
   if (loadBtn) loadBtn.addEventListener('click', () => {
     const input = document.createElement('input');
     input.type = 'file';
-    input.accept = 'image/*,.pixel,application/json';
+    input.accept = '.pixel,image/*';
     input.addEventListener('change', (ev) => {
       const file = ev.target.files && ev.target.files[0];
       if (!file) return;
+      console.log('Loading file:', file.name, file.type);
       const isPixel = file.name && file.name.toLowerCase().endsWith('.pixel');
+      console.log('Is pixel file:', isPixel);
       const reader = new FileReader();
       if (isPixel) {
         reader.onload = (re) => {
             try {
+              console.log('Parsing pixel file...');
               const payload = JSON.parse(re.target.result);
+              console.log('Payload:', payload);
               if (payload.gridSize) {
                 gridSize = payload.gridSize;
               }
@@ -198,6 +301,7 @@
               }
               resizeCanvas();
               render();
+              console.log('Pixel file loaded successfully');
               // sitewide/local persistence is not used; loaded pixels applied
             } catch (err) {
               console.error('Failed to parse .pixel file', err);
@@ -208,6 +312,7 @@
         reader.onload = (re) => {
           const img = new Image();
           img.onload = () => {
+            console.log('Loading image file...');
             // Draw the image scaled down to gridSize x gridSize so each pixel maps to a cell
             const tmp = document.createElement('canvas');
             tmp.width = gridSize;
@@ -224,6 +329,7 @@
               }
             }
             render();
+            console.log('Image file loaded successfully');
           };
           img.src = re.target.result;
         };
@@ -233,6 +339,29 @@
     input.click();
   });
   if (quitBtn) quitBtn.addEventListener('click', () => { window.location.href = './index.html'; });
+  if (clearBtn) clearBtn.addEventListener('click', () => {
+    // Fun fast clear animation - optimized for any canvas size
+    const totalCells = gridSize * gridSize;
+    let flashCount = 0;
+    const maxFlashes = Math.min(6, Math.max(3, Math.floor(gridSize / 8))); // Scale flashes with grid size
+    const flashInterval = setInterval(() => {
+      if (flashCount >= maxFlashes) {
+        clearInterval(flashInterval);
+        cells.fill('#ffffff');
+        render();
+        return;
+      }
+      
+      // Fill with random colors - optimized for performance
+      for (let i = 0; i < totalCells; i++) {
+        // Use bitwise operations for faster random color generation
+        const rand = (Math.random() * 0xFFFFFF) | 0;
+        cells[i] = '#' + rand.toString(16).padStart(6, '0');
+      }
+      render();
+      flashCount++;
+    }, 25); // Very fast 25ms intervals
+  });
 
   // Initialize: load sitewide settings (if present), then size and render
   loadSiteSettings().then(() => {

@@ -1,0 +1,174 @@
+/* Pixel Art Settings Styles */
+
+/* Base styles */
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+a {
+    display: inline-block;
+    margin-bottom: 20px;
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    transition: all 0.3s;
+}
+
+/* Light Mode (Default) */
+body.light-mode {
+    background-color: #ffffff;
+    color: #333333;
+}
+
+.light-mode a {
+    background-color: #f0f0f0;
+    border-color: #cccccc;
+    color: #333333;
+}
+
+.light-mode a:hover {
+    background-color: #e0e0e0;
+}
+
+/* Dark Mode */
+body.dark-mode {
+    background-color: #1a1a1a;
+    color: #ffffff;
+}
+
+.dark-mode a {
+    background-color: #333333;
+    border-color: #555555;
+    color: #ffffff;
+}
+
+.dark-mode a:hover {
+    background-color: #444444;
+}
+
+/* Dark Blue Mode */
+body.dark-blue-mode {
+    background-color: #0f1419;
+    color: #e6f3ff;
+}
+
+.dark-blue-mode a {
+    background-color: #1a2332;
+    border-color: #2a3c4d;
+    color: #e6f3ff;
+}
+
+.dark-blue-mode a:hover {
+    background-color: #2a3c4d;
+}
+
+/* Purple Mode */
+body.purple-mode {
+    background-color: #1a0d2b;
+    color: #f0e6ff;
+}
+
+.purple-mode a {
+    background-color: #2a1a4a;
+    border-color: #4a2a7a;
+    color: #f0e6ff;
+}
+
+.purple-mode a:hover {
+    background-color: #3a2a5a;
+}
+
+/* Theme preview styles */
+#theme-preview {
+    margin-top: 30px;
+    padding: 20px;
+    border: 2px dashed;
+    border-radius: 8px;
+    transition: border-color 0.3s;
+}
+
+.light-mode #theme-preview {
+    border-color: #cccccc;
+}
+
+.dark-mode #theme-preview {
+    border-color: #555555;
+}
+
+.dark-blue-mode #theme-preview {
+    border-color: #2a3c4d;
+}
+
+.dark-blue-mode #theme-preview {
+    border-color: #4a2a7a;
+}
+
+#theme-preview h3 {
+    margin-top: 0;
+    text-align: center;
+}
+
+.preview-content {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.preview-elements {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    align-items: center;
+}
+
+.preview-btn {
+    padding: 8px 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.preview-link {
+    text-decoration: none;
+    padding: 8px 16px;
+    border: 1px solid;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: all 0.3s;
+}
+
+.preview-text {
+    flex: 1;
+    min-width: 200px;
+}
+
+.preview-text h4 {
+    margin: 0 0 8px 0;
+    font-size: 16px;
+}
+
+.preview-text p {
+    margin: 0;
+    font-size: 14px;
+}
+
+.preview-canvas {
+    text-align: center;
+}
+
+.preview-canvas canvas {
+    border: 1px solid;
+    border-radius: 4px;
+}
+
+.preview-canvas p {
+    margin: 8px 0 0 0;
+    font-size: 12px;
+    opacity: 0.7;
+}

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Save/Load Test</title>
+</head>
+<body>
+    <h1>Save/Load Test</h1>
+    <button id="test-save">Test Save</button>
+    <button id="test-load">Test Load</button>
+    <div id="output"></div>
+
+    <script>
+        // Test the save/load logic
+        const output = document.getElementById('output');
+
+        // Mock data
+        let gridSize = 4;
+        let pixelSize = 16;
+        let cells = ['#ff0000', '#00ff00', '#0000ff', '#ffff00'];
+
+        // Helper functions
+        function hexToRgb(hex) {
+            if (!hex) return { r: 255, g: 255, b: 255, a: 255 };
+            hex = hex.replace('#', '');
+            if (hex.length === 3) hex = hex.split('').map(h => h + h).join('');
+            const num = parseInt(hex, 16);
+            return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255, a: 255 };
+        }
+
+        function componentToHex(c) {
+            const hex = c.toString(16);
+            return hex.length == 1 ? '0' + hex : hex;
+        }
+
+        function rgbToHex(r, g, b) {
+            return '#' + componentToHex(r) + componentToHex(g) + componentToHex(b);
+        }
+
+        // Test save
+        document.getElementById('test-save').addEventListener('click', () => {
+            const payload = {
+                gridSize,
+                pixelSize,
+                pixels: []
+            };
+
+            for (let y = 0; y < Math.sqrt(cells.length); y++) {
+                for (let x = 0; x < Math.sqrt(cells.length); x++) {
+                    const hex = cells[y * Math.sqrt(cells.length) + x] || '#ffffff';
+                    const rgba = hexToRgb(hex);
+                    payload.pixels.push({ x, y, r: rgba.r, g: rgba.g, b: rgba.b, a: rgba.a });
+                }
+            }
+
+            output.textContent = 'Saved data: ' + JSON.stringify(payload, null, 2);
+            localStorage.setItem('test-pixel-data', JSON.stringify(payload));
+        });
+
+        // Test load
+        document.getElementById('test-load').addEventListener('click', () => {
+            const savedData = localStorage.getItem('test-pixel-data');
+            if (!savedData) {
+                output.textContent = 'No saved data found';
+                return;
+            }
+
+            try {
+                const payload = JSON.parse(savedData);
+                output.textContent = 'Loaded data: ' + JSON.stringify(payload, null, 2);
+
+                // Test loading logic
+                if (payload.gridSize) gridSize = payload.gridSize;
+                if (payload.pixelSize) pixelSize = payload.pixelSize;
+
+                cells = new Array(gridSize * gridSize).fill('#ffffff');
+                if (Array.isArray(payload.pixels)) {
+                    payload.pixels.forEach(p => {
+                        const hex = p.a === 0 ? '#ffffff' : rgbToHex(p.r, p.g, p.b);
+                        if (p.x >= 0 && p.y >= 0 && p.x < gridSize && p.y < gridSize) {
+                            cells[p.y * gridSize + p.x] = hex;
+                        }
+                    });
+                }
+
+                output.textContent += '\n\nLoaded cells: ' + JSON.stringify(cells);
+            } catch (err) {
+                output.textContent = 'Error loading: ' + err.message;
+            }
+        });
+    </script>
+</body>
+</html>

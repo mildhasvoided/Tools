@@ -7,14 +7,26 @@
     </head>
         <body>
             <h1>Pixel Art</h1>
-            <a href="./index.html">return</a>
+            <a href="./index.html">return</a><br>
             <div id="ui1"><button id="pencil">Pencil</button><button id="eraser">Eraser</button><button id="fill">Fill tool</button><br>
-            <button id="save">Save</button><button id="load">load</button><button id="quit">Quit</button>
+            <button id="save">Save</button><button id="load">load</button><button id="quit">Quit</button><button id="clear">Clear</button>
             </div>
-            <button "ui toggle">next ui</button><!---make this hide the save annd load and quit buttons and expose the buttons in the div labeled "ui2", "ui1" is the og ui--->
+            <button id="ui-toggle">next ui</button><!---make this hide the save annd load and quit buttons and expose the buttons in the div labeled "ui2", "ui1" is the og ui--->
             <!--ui2 should be hidden on START only unhidden when toggle-->
             <div id="ui2">
             <a href="Pixelsettings.html"><button id="set">settings</button></a><br>
+            </div>
+            <div id="ui3">
+                <p>Canvas Size:</p>
+                <button data-size="2">2x2</button>
+                <button data-size="4">4x4</button>
+                <button data-size="8">8x8</button>
+                <button data-size="16">16x16</button>
+                <button data-size="32">32x32</button>
+                <button data-size="64">64x64</button>
+                <button data-size="128">128x128</button>
+                <button data-size="256">256x256</button>
+                <button data-size="512">512x512</button>
             </div>
             <canvas id="Pixel-can">
 
