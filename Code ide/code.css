@@ -1,0 +1,179 @@
+/* Simple styles for the code ide page */
+
+button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+A{
+    color:red;
+}
+button {
+    color:red;
+    border-color: black;
+}
+
+/* Code Editor Styles */
+#code-editor-container {
+    margin-top: 20px;
+    border: 1px solid;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+#tab-bar {
+    display: flex;
+    background-color: #00012c;
+    border-bottom: 1px solid #001a8d;
+    padding: 5px;
+    gap: 2px;
+}
+
+.tab {
+    background: #515151;
+    border: 1px solid #ccc;
+    border-radius: 4px 4px 0 0;
+    padding: 8px 12px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    min-width: 120px;
+    position: relative;
+    color: rgb(210, 210, 210);
+}
+
+.tab.active {
+    background: white;
+    border-bottom: 1px solid white;
+    margin-bottom: -1px;
+    color: black;
+}
+
+.tab:hover {
+    background: #f0f0f0;
+}
+
+.tab.active:hover {
+    background: white;
+}
+
+.tab-close {
+    background: none;
+    border: none;
+    color: #ff0000;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 0;
+    margin-left: auto;
+}
+
+.tab-close:hover {
+    color: #000;
+}
+
+#new-tab-btn {
+    background: #4CAF50;
+    color: rgb(0, 0, 0);
+    border: 1px solid #4CAF50;
+    border-radius: 4px;
+    padding: 8px 12px;
+    font-size: 14px;
+    margin-left: auto;
+}
+
+#new-tab-btn:hover {
+    background: #45a049;
+}
+
+#editor-area {
+    position: relative;
+}
+
+#code-textarea {
+    width: 100%;
+    height: 500px;
+    border: none;
+    padding: 15px;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    resize: vertical;
+    background: transparent;
+    color: transparent;
+    caret-color: inherit;
+    outline: none;
+    box-sizing: border-box;
+    position: relative;
+    z-index: 2;
+}
+
+.code-highlight {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    padding: 15px;
+    pointer-events: none;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    z-index: 1;
+    border-radius: 0;
+}
+
+#code-textarea:empty::before {
+    content: attr(placeholder);
+    color: #000000;
+    pointer-events: none;
+}
+
+/* Syntax Highlighting Colors */
+
+/* Light Mode */
+.light-mode .code-highlight .keyword { color: #0000ff; font-weight: bold; }
+.light-mode .code-highlight .string { color: #008000; }
+.light-mode .code-highlight .comment { color: #808080; font-style: italic; }
+.light-mode .code-highlight .number { color: #ff6600; }
+.light-mode .code-highlight .function { color: #795e26; }
+.light-mode .code-highlight .variable { color: #001080; }
+.light-mode .code-highlight .operator { color: #000000; }
+.light-mode .code-highlight .bracket { color: #000000; }
+
+/* Dark Mode */
+.dark-mode .code-highlight .keyword { color: #569cd6; font-weight: bold; }
+.dark-mode .code-highlight .string { color: #ce9178; }
+.dark-mode .code-highlight .comment { color: #6a9955; font-style: italic; }
+.dark-mode .code-highlight .number { color: #b5cea8; }
+.dark-mode .code-highlight .function { color: #dcdcaa; }
+.dark-mode .code-highlight .variable { color: #9cdcfe; }
+.dark-mode .code-highlight .operator { color: #d4d4d4; }
+.dark-mode .code-highlight .bracket { color: #ffd700; }
+
+/* Dark Blue Mode */
+.dark-blue-mode .code-highlight .keyword { color: #4da6ff; font-weight: bold; }
+.dark-blue-mode .code-highlight .string { color: #ff9999; }
+.dark-blue-mode .code-highlight .comment { color: #4dff4d; font-style: italic; }
+.dark-blue-mode .code-highlight .number { color: #ffff99; }
+.dark-blue-mode .code-highlight .function { color: #c299ff; }
+.dark-blue-mode .code-highlight .variable { color: #99ccff; }
+.dark-blue-mode .code-highlight .operator { color: #e6f3ff; }
+.dark-blue-mode .code-highlight .bracket { color: #ffd700; }
+
+/* Purple Mode */
+.purple-mode .code-highlight .keyword { color: #c299ff; font-weight: bold; }
+.purple-mode .code-highlight .string { color: #99ff99; }
+.purple-mode .code-highlight .comment { color: #4dff4d; font-style: italic; }
+.purple-mode .code-highlight .number { color: #ffff99; }
+.purple-mode .code-highlight .function { color: #ff9999; }
+.purple-mode .code-highlight .variable { color: #99ccff; }
+.purple-mode .code-highlight .operator { color: #f0e6ff; }
+.purple-mode .code-highlight .bracket { color: #ffd700; }

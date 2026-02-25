@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>Small scale ide:</title>
+        <link rel="stylesheet" href="./code.css">
+        <link rel="stylesheet" href="../Pixelsettings.css">
+    </head>
+        <body>
+            <h1>TEXT (and code) EDITOR</h1>
+            <a href="/Pixelsettings.html" target="_blank"><button>settings ⚙️</button></a>
+            <a href="../index.html">return</a>
+            <br>
+            <button id="load-folder-btn">Load folder</button> <button id="export-btn">Export</button> <button id="import-btn">Import</button> <a href="">close all tabs</a>
+
+            <!-- Code Editor with Tab System -->
+            <div id="code-editor-container">
+                <div id="tab-bar">
+                    <button id="new-tab-btn">+</button>
+                </div>
+                <div id="editor-area">
+                    <div id="code-highlight" class="code-highlight"></div>
+                    <textarea id="code-textarea" placeholder="Select a file or create a new tab to start coding..."></textarea>
+                </div>
+            </div>
+        </body>
+        <script src="code.js"></script>
+</html>
